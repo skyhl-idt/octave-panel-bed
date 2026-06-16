@@ -1,0 +1,10 @@
+# local conda environment
+env/
+
+# python caches
+__pycache__/
+.pytest_cache/
+*.pyc
+
+# large regenerable intermediate (rebuild with scripts/build_dict.py)
+results/dict.tsv

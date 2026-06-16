@@ -1,0 +1,7 @@
+name: octave-panels
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.11
+  - pytest=9.0
