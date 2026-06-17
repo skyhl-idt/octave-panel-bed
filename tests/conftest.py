@@ -58,6 +58,12 @@ def all_probe_bed(chip):
                         "Octave_Hotspot_Panel_120bp_ALL_Probe.bed")
 
 
+def all_target_bed(chip):
+    """Path to the combined ALL_Target.bed for ``chip``."""
+    return os.path.join(reflib.chip_dir(chip),
+                        "Octave_Hotspot_Panel_120bp_ALL_Target.bed")
+
+
 def orig_probe_bed(num):
     """Path to the original Kyudo2 Probe.bed for panel ``num``."""
     return reflib.orig_probe_bed(num)

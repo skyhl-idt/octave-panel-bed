@@ -1,5 +1,6 @@
 """Map each chip's probes to genomic coordinates via the sequence dictionary,
-emit per-panel Probe.bed + Target.bed and combined ALL_Probe.bed per chip,
+emit per-panel Probe.bed + Target.bed and combined ALL_Probe.bed /
+ALL_Target.bed per chip,
 write panel mapping tables, and collect QC facts.
 """
 import os
@@ -66,6 +67,7 @@ def main():
 
         unmatched = []
         all_probe = []
+        all_target = []
         # mapping table: chip panel -> Counter of original panels (non-control)
         panel_origin = OrderedDict()
 
@@ -82,6 +84,7 @@ def main():
                 probe_lines.append(p)
                 target_lines.append(t)
                 all_probe.append(p)
+                all_target.append(t)
                 op, ctrl = seq2orig[seq]
                 if not ctrl:
                     origins[op] += 1
@@ -102,6 +105,11 @@ def main():
                 outdir, "Octave_Hotspot_Panel_120bp_ALL_Probe.bed"),
                 "w") as fo:
             fo.write("\n".join(all_probe) + "\n")
+
+        with open(os.path.join(
+                outdir, "Octave_Hotspot_Panel_120bp_ALL_Target.bed"),
+                "w") as fo:
+            fo.write("\n".join(all_target) + "\n")
 
         # mapping table
         with open(os.path.join(outdir, "panel_mapping.tsv"), "w") as fo:

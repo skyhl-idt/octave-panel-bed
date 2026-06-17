@@ -64,6 +64,6 @@ unique re-assignment, controls are intact, no extra probes were synthesized, and
 the QC report is all-PASS.
 
 ## Outputs (`results/`)
-- `Chip_{1,2,3}/` — 200x `*_Probe.bed` + 200x `*_Target.bed` + `ALL_Probe.bed`
+- `Chip_{1,2,3}/` — 200x `*_Probe.bed` + 200x `*_Target.bed` + `ALL_Probe.bed` + `ALL_Target.bed`
   + `panel_mapping.tsv` (chip panel <-> original panel identity).
 - `dict.tsv`, `synthesis_qc_report.md`, `synthesis_qc_report.tsv`.

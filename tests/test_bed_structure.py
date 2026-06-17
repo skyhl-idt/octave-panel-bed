@@ -14,14 +14,15 @@ def test_chip_dir_exists(chip):
 
 @pytest.mark.parametrize("chip", C.ALL_CHIPS)
 def test_all_panel_files_present(chip):
-    """All 200 Probe/Target bed pairs plus ALL_Probe.bed and the panel
-    mapping table are present for the chip."""
+    """All 200 Probe/Target bed pairs plus ALL_Probe.bed, ALL_Target.bed and
+    the panel mapping table are present for the chip."""
     for num in range(1, C.N_PANELS + 1):
         assert os.path.isfile(C.panel_probe_bed(chip, num)), \
             "missing Probe.bed panel %d chip %d" % (num, chip)
         assert os.path.isfile(C.panel_target_bed(chip, num)), \
             "missing Target.bed panel %d chip %d" % (num, chip)
     assert os.path.isfile(C.all_probe_bed(chip))
+    assert os.path.isfile(C.all_target_bed(chip))
     assert os.path.isfile(os.path.join(C.BED, "Chip_%d" % chip,
                                        "panel_mapping.tsv"))
 
@@ -29,11 +30,12 @@ def test_all_panel_files_present(chip):
 @pytest.mark.parametrize("chip", C.ALL_CHIPS)
 def test_exactly_200_panel_bed_pairs(chip):
     """There are exactly 200 per-panel Probe.bed and 200 Target.bed files
-    (no stray or missing panels), excluding the combined ALL file."""
+    (no stray or missing panels), excluding the combined ALL files."""
     d = os.path.join(C.BED, "Chip_%d" % chip)
     probe = [f for f in os.listdir(d)
              if f.endswith("_Probe.bed") and "ALL" not in f]
-    target = [f for f in os.listdir(d) if f.endswith("_Target.bed")]
+    target = [f for f in os.listdir(d)
+              if f.endswith("_Target.bed") and "ALL" not in f]
     assert len(probe) == C.N_PANELS
     assert len(target) == C.N_PANELS
 
@@ -103,3 +105,24 @@ def test_all_probe_bed_is_concatenation(chip):
     actual = C.read_lines(C.all_probe_bed(chip))
     assert len(actual) == C.N_PANELS * C.PROBES_PER_PANEL[chip]
     assert actual == expected
+
+
+@pytest.mark.parametrize("chip", C.ALL_CHIPS)
+def test_all_target_bed_is_concatenation(chip):
+    """The combined ALL_Target.bed equals the per-panel Target.beds
+    concatenated in panel order, with one target row per probe."""
+    expected = []
+    for num in range(1, C.N_PANELS + 1):
+        expected.extend(C.read_lines(C.panel_target_bed(chip, num)))
+    actual = C.read_lines(C.all_target_bed(chip))
+    assert len(actual) == C.N_PANELS * C.PROBES_PER_PANEL[chip]
+    assert actual == expected
+
+
+@pytest.mark.parametrize("chip", C.ALL_CHIPS)
+def test_all_probe_and_target_aggregates_aligned(chip):
+    """ALL_Probe.bed and ALL_Target.bed have the same number of rows
+    (each probe has exactly one corresponding hotspot target)."""
+    probe = C.read_lines(C.all_probe_bed(chip))
+    target = C.read_lines(C.all_target_bed(chip))
+    assert len(probe) == len(target)
